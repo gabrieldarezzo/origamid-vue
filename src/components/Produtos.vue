@@ -3,13 +3,7 @@
 
   <header class="header">
     <img class="logo" src="/assets/techno.svg" alt="Techno">
-    <div class="carrinho_menu">{{carrinhoTotal | numberPricePtBr}} | {{carrinho.length}}</div>
-    <ul>
-      <li v-for="(item, index) in carrinho" :key="item.id">
-        <p>{{item.nome}}</p>
-        <button @click="removeItem(index)">X</button>
-      </li>
-    </ul>
+    <div class="carrinho_menu" @click="activeCart = true">{{carrinhoTotal | numberPricePtBr}} | {{carrinho.length}}</div>
   </header>
 
   <section class="modal" v-if="produto.id" @click="closeModal">
@@ -50,6 +44,26 @@
     </div>
   </section>
 
+  <section class="carrinho_modal" :class="{ativo : showAlert}" @click="closeCartModal">
+    <div class="carrinho_container">
+      <button class="carrinho_fechar" @click="activeCart = false">x</button>
+      <h2 class="carrinho_titulo">Carrinho</h2>
+
+      <div v-if="carrinho.length > 0">
+        <ul class="carrinho_lista">
+          <li v-for="(item, index) in carrinho" :key="item.id" class="carrinho_item">
+            <p>{{item.nome}}</p>
+            <p class="carrinho_preco">{{item.preco | numberPricePtBr}}</p>
+            <button @click="removeItem(index)" class="carrinho_remover">X</button>
+          </li>
+        </ul>
+        <p class="carrinho_total">{{carrinhoTotal | numberPricePtBr}}</p>
+        <button class="carrinho_finalizar">Finalizar Compra</button>
+      </div>
+      <p v-if="carrinho.length == 0">O Carrinho está vazio.</p>
+    </div>
+  </section>
+
   <div class="alerta" :class="{ativo : showAlert}">
     <p class="alerta_mensagem">{{messageAlert}}</p>
   </div>
@@ -69,7 +83,9 @@ export default {
       produto: {},
       produtos: [],
       messageAlert: 'Item Add',
-      showAlert: false
+      showAlert: false,
+      activeCart: false
+
     }
   },
   created () {
@@ -114,6 +130,9 @@ export default {
     },
     closeModal ({ target, currentTarget }) {
       if (target === currentTarget) this.produto = {}
+    },
+    closeCartModal ({ target, currentTarget }) {
+      if (target === currentTarget) this.activeCart = false
     },
     addItem () {
       this.produto.estoque--
