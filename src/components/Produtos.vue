@@ -3,7 +3,13 @@
 
   <header class="header">
     <img class="logo" src="/assets/techno.svg" alt="Techno">
-    <div class="carrinho_menu">{{carrinhoTotal}} | </div>
+    <div class="carrinho_menu">{{carrinhoTotal | numberPricePtBr}} | {{carrinho.length}}</div>
+    <ul>
+      <li v-for="(item, index) in carrinho" :key="item.id">
+        <p>{{item.nome}}</p>
+        <button @click="removeItem(index)">X</button>
+      </li>
+    </ul>
   </header>
 
   <section class="modal" v-if="produto.id" @click="closeModal">
@@ -17,7 +23,8 @@
         <span class="modal_preco">{{produto.preco | numberPricePtBr}}</span>
         <h2 class="modal_titulo">{{produto.nome | capitalize}}</h2>
         <p>{{produto.descricao}}</p>
-        <button class="modal_btn">Adicionar Item</button>
+        <button v-if="produto.estoque > 0" class="modal_btn" @click="addItem">Adicionar Item</button>
+        <button v-if="produto.estoque == 0" class="modal_btn esgotado" disabled>Produto Esgotado</button>
       </div>
 
       <div class="avaliacoes">
@@ -42,6 +49,10 @@
       </div>
     </div>
   </section>
+
+  <div class="alerta ativo" :class="{ativo : showAlert}">
+    <p class="alerta_mensagem">{{messageAlert}}</p>
+  </div>
 </div>
 </template>
 
@@ -55,18 +66,36 @@ export default {
   data: function () {
     return {
       carrinho: [],
-      carrinhoTotal: 0,
       produto: {},
-      produtos: []
-
+      produtos: [],
+      messageAlert: 'Item Add',
+      showAlert: false
     }
   },
   created () {
+    if (window.localStorage.carrinho) {
+      this.carrinho = JSON.parse(window.localStorage.carrinho)
+    }
+
     const urlApi = 'http://localhost:3000/produtos'
     axios.get(urlApi)
       .then((response) => {
         this.produtos = response.data
       })
+  },
+  computed: {
+    carrinhoTotal () {
+      let subTotal = 0
+
+      if (this.carrinho.length === 0) {
+        return 0
+      }
+
+      this.carrinho.map((item) => {
+        subTotal += item.preco
+      })
+      return subTotal
+    }
   },
   methods: {
     fetchProduct (id) {
@@ -79,19 +108,48 @@ export default {
     closeModal ({ target, currentTarget }) {
       if (target === currentTarget) this.produto = {}
     },
+    addItem () {
+      this.produto.estoque--
+      const { id, nome, preco } = this.produto
+
+      // avoid [Vue warn]: Duplicate keys detected: ''. happens when {id is same}
+
+      this.carrinho.push({
+        id,
+        nome,
+        preco
+      })
+
+      this.alertMessage(`${nome} Adicionado ao carrinho`)
+    },
+    removeItem (index) {
+      this.carrinho.splice(index, 1)
+    },
     openModal (id) {
       this.fetchProduct(id)
       window.scrollTo({
         top: 0,
         behavior: 'smooth'
       })
-    }
+    },
+    alertMessage (message) {
+      this.messageAlert = message
+      this.showAlert = true
 
+      window.setInterval(() => {
+        this.showAlert = false
+      }, 2000)
+    }
   },
   filters: {
     numberPricePtBr (value) {
-      if (!value) return ''
-
+      if (!value) {
+        let auxValue = '0'
+        auxValue.toLocaleString('pt-BR', {
+          style: 'currency',
+          currency: 'BRL'
+        })
+      }
       return value.toLocaleString('pt-BR', {
         style: 'currency',
         currency: 'BRL'
@@ -101,6 +159,15 @@ export default {
       if (typeof value !== 'string') return ''
       return value.charAt(0).toUpperCase() + value.slice(1)
     }
+  },
+
+  watch: {
+    carrinho () {
+      console.log(this.carrinho)
+      console.log(JSON.stringify(this.carrinho))
+      window.localStorage.carrinho = JSON.stringify(this.carrinho)
+    }
+
   }
 
 }

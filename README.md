@@ -8,7 +8,7 @@ npm install
 
 ## Start Fake-DB
 ```
-npm run json-server db.json
+npm run db
 ```
 
 ### Compiles and hot-reloads for development
