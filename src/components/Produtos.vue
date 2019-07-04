@@ -54,9 +54,11 @@ export default {
   name: 'ApiIextrading',
   data: function () {
     return {
+      carrinho: [],
+      carrinhoTotal: 0,
       produto: {},
-      produtos: [],
-      carrinhoTotal: 0
+      produtos: []
+
     }
   },
   created () {

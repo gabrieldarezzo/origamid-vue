@@ -108,13 +108,14 @@ body {
 }
 
 .modal_container {
+    text-align: left;
     position: relative;
-    background: linear-gradient(to right, transparent 300px, white 300px);
+    background: linear-gradient(to right, transparent 250px, white 250px);
     z-index: 1;
     display: grid;
     align-items: end;
     grid-gap: 50px;
-    padding: 0px 50px 50px 0;
+    padding: 50px 50px 50px 0;
     animation: fadeIn .3s forwards;
 }
 
