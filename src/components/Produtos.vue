@@ -1,17 +1,9 @@
 <template>
   <section>
-
-    <!--
-      <img :src="test" />
-      <img :src="test" />
-    -->
-
-    <hr>
     <div v-for="produto in produtos" :key="produto.id" class="produto">
       <img :src="produto.img" />
         {{produto.nome}}
     </div>
-
   </section>
 </template>
 
@@ -24,11 +16,7 @@ export default {
   name: 'ApiIextrading',
   data: function () {
     return {
-      produtos: [],
-      // test: require('@/assets/test.jpg')
-      // test: require('../assets/images/notebook/notebook.jpg')
-      test: require('@/assets/images/notebook/notebook.jpg')
-
+      produtos: []
     }
   },
   created () {
