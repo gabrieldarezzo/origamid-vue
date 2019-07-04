@@ -226,8 +226,7 @@ body {
     }
 }
 
-.alerta {
-    background: white;
+.alerta {    
     position: absolute;
     top: 50px;
     left: 0px;
@@ -239,7 +238,7 @@ body {
 
 .alerta.ativo {
     display: block;
-    animation: fadeInDown .3 forwards;
+    animation: fadeInDown .3s forwards;
 }
 
 .alerta_mensagem {

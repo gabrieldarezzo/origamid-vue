@@ -50,7 +50,7 @@
     </div>
   </section>
 
-  <div class="alerta ativo" :class="{ativo : showAlert}">
+  <div class="alerta" :class="{ativo : showAlert}">
     <p class="alerta_mensagem">{{messageAlert}}</p>
   </div>
 </div>
@@ -76,12 +76,13 @@ export default {
     if (window.localStorage.carrinho) {
       this.carrinho = JSON.parse(window.localStorage.carrinho)
     }
-
     const urlApi = 'http://localhost:3000/produtos'
     axios.get(urlApi)
       .then((response) => {
         this.produtos = response.data
       })
+
+    this.router()
   },
   computed: {
     carrinhoTotal () {
@@ -104,6 +105,12 @@ export default {
         .then((response) => {
           this.produto = response.data
         })
+    },
+    router () {
+      const hash = document.location.hash
+      if (hash) {
+        this.fetchProduct(hash.replace('#', ''))
+      }
     },
     closeModal ({ target, currentTarget }) {
       if (target === currentTarget) this.produto = {}
@@ -162,6 +169,14 @@ export default {
   },
 
   watch: {
+    produto () {
+      document.title = this.produto.nome || 'Techno'
+      const hash = this.produto.id || ''
+
+      console.log(hash)
+      history.pushState(null, null, `#${hash}`)
+    },
+
     carrinho () {
       console.log(this.carrinho)
       console.log(JSON.stringify(this.carrinho))
