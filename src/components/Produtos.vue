@@ -44,7 +44,7 @@
     </div>
   </section>
 
-  <section class="carrinho_modal" :class="{ativo : showAlert}" @click="closeCartModal">
+  <section class="carrinho_modal" :class="{ativo : activeCart}" @click="closeCartModal">
     <div class="carrinho_container">
       <button class="carrinho_fechar" @click="activeCart = false">x</button>
       <h2 class="carrinho_titulo">Carrinho</h2>
@@ -134,6 +134,15 @@ export default {
     closeCartModal ({ target, currentTarget }) {
       if (target === currentTarget) this.activeCart = false
     },
+    compareStock () {
+      const itens = this.carrinho.filter(item => {
+        console.log(item.id)
+        if (item.id === this.produto.id) {
+          return true
+        }
+      })
+      this.produto.estoque = this.produto.estoque - itens.length
+    },
     addItem () {
       this.produto.estoque--
       const { id, nome, preco } = this.produto
@@ -191,14 +200,16 @@ export default {
     produto () {
       document.title = this.produto.nome || 'Techno'
       const hash = this.produto.id || ''
-
-      console.log(hash)
       history.pushState(null, null, `#${hash}`)
+
+      if (this.produto) {
+        this.compareStock()
+      }
     },
 
     carrinho () {
-      console.log(this.carrinho)
-      console.log(JSON.stringify(this.carrinho))
+      // console.log(this.carrinho)
+      // console.log(JSON.stringify(this.carrinho))
       window.localStorage.carrinho = JSON.stringify(this.carrinho)
     }
 
